@@ -48,24 +48,24 @@ func Fetcher(input RequestInput) ([]byte, error) {
 	return responseBody, nil
 }
 
-// SKUData é um tipo para agrupar dados dinâmicos
-type SKUData map[string]interface{}
+// subData é um tipo para agrupar dados dinâmicos
+type subData map[string]interface{}
 
 // ExtractFields percorre e extrai os campos desejados da resposta
-func ExtractFields(responseBody []byte, fields []string) (map[string]SKUData, error) {
+func ExtractFields(responseBody []byte, fields []string) (map[string]subData, error) {
 	var data interface{}
 	err := json.Unmarshal(responseBody, &data)
 	if err != nil {
 		return nil, err
 	}
 
-	grouped := make(map[string]SKUData)
+	grouped := make(map[string]subData)
 	CollectFieldsV2(data, "", fields, grouped)
 	return grouped, nil
 }
 
 // CollectFieldsV2 percorre os dados e agrupa apenas no nível correto
-func CollectFieldsV2(data interface{}, currentPath string, fields []string, grouped map[string]SKUData) {
+func CollectFieldsV2(data interface{}, currentPath string, fields []string, grouped map[string]subData) {
 	switch v := data.(type) {
 	case map[string]interface{}:
 		for key, value := range v {
@@ -81,7 +81,7 @@ func CollectFieldsV2(data interface{}, currentPath string, fields []string, grou
 					groupPath = "root"
 				}
 				if _, exists := grouped[groupPath]; !exists {
-					grouped[groupPath] = SKUData{}
+					grouped[groupPath] = subData{}
 				}
 				grouped[groupPath][key] = value
 			}
